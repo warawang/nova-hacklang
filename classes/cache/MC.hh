@@ -2,7 +2,7 @@
   namespace nova\cache;
 
   use Memcached;
-  use nova\util\Config;
+  use nova\util\Config; 
   use nova\cache\exception\MCException;
 
   class MC {
