@@ -1,0 +1,129 @@
+/*
+기본 버튼 스타일
+ */
+.cbtn {
+  @include transition(all,0.15s);
+  display: block;
+  min-width: 36px;
+  height: 36px;
+  line-height: 36px;
+  text-align: center;
+  font-weight: bold;
+
+  background-color: #fff;
+  border: 1px #cecece solid;
+  color: $text-color;
+
+  &:hover,
+  &:focus {
+    border-color: $id-color;
+    color: $id-color;
+  }
+
+  &:active {
+    background-color: $id-color;
+    color: #fff;
+  }
+
+  &.disabled {
+    color: #d0d0d0;
+  }
+}
+
+
+/*
+사이즈
+ */
+.cbtn.width-small {
+  width: 100px;
+}
+
+/*
+보더 스타일
+*/
+
+.cbtn.border-dashed {
+  border-style: dashed;
+}
+
+
+/*
+색상 반전 버튼
+ */
+.cbtn.inverse {
+  border-color: $id-color;
+  background-color: $id-color;
+  color: #fff;
+
+  &:hover,
+  &:focus {
+    background-color: lighten($id-color, 5);
+  }
+
+  &:active {
+    background-color: darken($id-color, 5);
+  }
+}
+
+/*
+align
+ */
+.cbtn.center {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/*
+Red
+ */
+.cbtn.red {
+  background-color:#b72f2f;
+  border-color: #b72f2f;
+  color: #ffffff;
+}
+
+.no-touch .cbtn.red:hover,
+.cbtn.red:focus,
+.cbtn.red:active {
+  background-color:#a02929;
+}
+
+/*
+Blue
+ */
+.cbtn.blue {
+  background-color: #2856b4;
+  border-color: #2856b4;
+  color: #ffffff;
+
+  &:hover,
+  &:focus {
+    background-color: lighten(#2856b4, 5);
+  }
+
+  &:active {
+    background-color: darken(#2856b4, 5);
+  }
+}
+
+.no-touch .cbtn.blue:hover,
+.cbtn.blue:focus,
+.cbtn.blue:active {
+  background-color:#0f43ab;
+}
+
+/*
+Gray
+ */
+.cbtn.gray {
+  background-color: #cecece;
+  border-color: #cecece;
+  color: #2f2f2f;
+}
+
+.no-touch .cbtn.gray:hover,
+.cbtn.gray:focus,
+.cbtn.gray:active {
+  background-color:#b9b9b9;
+  color: #2f2f2f;
+}

@@ -1,0 +1,189 @@
+.cform {
+
+  fieldset {
+  }
+
+  legend {
+    display: none;
+  }
+
+  .handle {
+    display: block;
+    position: relative;
+    margin-bottom: 12px;
+    padding-bottom: 7px;
+    border-bottom: 1px #cecece solid;
+
+    &.hidden {
+      display: none;
+    }
+
+    /**
+     * unfole 하위의 icon 이미지는 서비스별 스타일에서 별도 설정한다.
+     * 크기는 15px 15px 로 고정
+     */
+    &.unfold {
+      height: 27px;
+
+      .icon {
+        display: block;
+        position: relative;
+        float:left;
+        width: 15px;
+        height: 15px;
+        margin-top: 6px;
+      }
+
+      .label {
+        display: block;
+        position: relative;
+        margin-left: 22px;
+        font-size: 0.923em;
+        line-height: 27px;
+        font-weight: bold;
+      }
+
+      &:hover,
+      &:focus,
+      &:active {
+        .label {
+          color: $id-color;
+        }
+      }
+    }
+  }
+
+  .item {
+    position: relative;
+    margin-bottom: 12px;
+
+    &.hidden {
+      display: none;
+    }
+
+    label {
+      @include transition(color,0.3s);
+      font-size: 0.923em;
+      font-weight: bold;
+    }
+
+    .field {
+      .input {
+        position: relative;
+
+        textarea,
+        input[type="text"] {
+          position: relative;
+          display: block;
+          font-weight:bold;
+          padding: 5px 0 10px 0;
+          width: 100%;
+          border: none;
+          resize: none;
+          outline: none;
+          background: none;
+
+          &.placeholder {
+            color: $annotation-color;
+            font-weight: normal;
+          }
+        }
+
+        textarea {
+          @include transition(height,0.3s);
+          overflow: hidden;
+
+          &.placeholder {
+            color: $annotation-color;
+            font-weight: normal;
+          }
+        }
+
+        .dline {
+          position: absolute;
+          width: 100%;
+          height: 1px;
+          background: #cecece;
+        }
+
+        .hline {
+          @include transition(all,0.3s);
+          @include transform(scaleX(0));
+          visibility: hidden;
+          position: absolute;
+          width: 100%;
+          height: 2px;
+          background: $id-color;
+        }
+      }
+    }
+
+    .istatus {
+      @include transition(height,0.3s);
+      position: relative;
+      font-size: 0.846em;
+      margin-top: 8px;
+      height: 0;
+      overflow: hidden;
+
+      .msg {
+        margin-right: 50px;
+        height: 20px;
+      }
+
+      .counter {
+        @extend .nowrap;
+        position: absolute;
+        right: 0;
+        top: 0;
+        width: 60px;
+        text-align: right;
+
+        .now {
+        }
+      }
+    }
+
+    &.error {
+      .istatus {
+        height: auto;
+      }
+
+      &.over-length {
+        .istatus .msg,
+        .counter .now {
+          color: #d50000;
+        }
+      }
+    }
+
+    &.success {
+      .istatus {
+        height: auto;
+
+        .msg {
+          color: #48aa00;
+        }
+      }
+    }
+
+    &.selected {
+      label {
+        color: $id-color;
+      }
+
+      .field {
+        .input {
+          .hline {
+            @include transform(scaleX(1));
+            visibility: visible;
+
+          }
+        }
+      }
+
+    }
+  }
+
+
+}
