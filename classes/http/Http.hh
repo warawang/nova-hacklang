@@ -138,7 +138,7 @@
         }
 
         $result = $contentLength;
-      }
+      } 
 
       return $result;
     }
