@@ -8,8 +8,10 @@
   class Http {
     private string $userAgent = "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/45.0.2454.93 Safari/537.36";
     private int $timeout = 120;
+    private ?string $authorization = NULL;
+    private ?array<string,mixed> $postData;
 
-    private function getCurlSession(string $url, ?array<string,mixed> $postData = NULL, ?string $authorization = NULL) : resource {
+    private function getCurlSession(string $url) : resource {
       $ch = curl_init();
       $urlinfo = parse_url($url);
       $httpHeader = array();
@@ -22,15 +24,15 @@
       curl_setopt($ch, CURLOPT_TIMEOUT, $this->timeout);
       curl_setopt($ch, CURLOPT_REFERER, $urlinfo["scheme"]."://".$urlinfo["host"]);
 
-      if($postData !== NULL) {
-        $postDataQuery = http_build_query($postData);
+      if($this->postData !== NULL) {
+        $postDataQuery = http_build_query($this->postData);
 
         curl_setopt($ch, CURLOPT_POST, true);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $postDataQuery);
       }
 
-      if($authorization !== NULL) {
-        $httpHeader[] = "authorization: ".$authorization;
+      if($this->authorization !== NULL) {
+        $httpHeader[] = "authorization: ".$this->authorization;
       }
 
       // 설정된 헤더가 있을 경우
@@ -41,8 +43,8 @@
       return $ch;
     }
 
-    public function get(string $url, ?array<string,mixed> $postData = NULL, ?string $authorization = NULL) : string {
-      $ch = $this->getCurlSession($url, $postData, $authorization);
+    public function get(string $url) : string {
+      $ch = $this->getCurlSession($url);
 
       $res = curl_exec($ch);
 
@@ -59,8 +61,8 @@
       return $res;
     }
 
-    public function getJson(string $url, ?array<string, mixed> $postData = NULL, ?string $authorization = NULL) : array<mixed,mixed> {
-      $jsonString = $this->get($url, $postData, $authorization);
+    public function getJson(string $url) : array<mixed,mixed> {
+      $jsonString = $this->get($url);
 
       if(($json = json_decode($jsonString, true)) === NULL) {
         throw new HttpURLAccessException("Failed to decode json string : {$url}");
@@ -69,9 +71,9 @@
       return $json;
     }
 
-    public function download(string $url, ?string $destPath = NULL, ?array<string,mixed> $postData = NULL, ?string $authorization = NULL) : string {
+    public function download(string $url, ?string $destPath = NULL) : string {
       if($destPath === NULL) $destPath = FileUtils::getTempFilePath();
-      $ch = $this->getCurlSession($url, $postData, $authorization);
+      $ch = $this->getCurlSession($url);
 
       if(($res = curl_exec($ch)) === false) {
         curl_close($ch);
@@ -197,6 +199,18 @@
       return $this->userAgent;
     }
 
+    public function setPostData(array<string,mixed> $postData) : void {
+      $this->postData = $postData;
+    }
+
+    public function getPostData() : ?array<string,mixed> {
+      return $this->postData;
+    }
+
+    public function setAuthorization(string $authorization) : void {
+      $this->authorization = $authorization;
+    }
+
     public function setUsetAgent(string $usetAgent) : void {
       $this->userAgent = $usetAgent;
     }
@@ -204,7 +218,5 @@
     public function setTimeout(int $timeout) : void {
       $this->timeout = $timeout;
     }
-
-
 
   }
