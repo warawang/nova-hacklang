@@ -9,9 +9,12 @@
     private string $userAgent = "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/45.0.2454.93 Safari/537.36";
     private int $timeout = 120;
     private ?string $authorization = NULL;
-    private ?array<string,mixed> $postData;
+    private mixed $postData;
+    private ?string $referer = NULL;
+    private bool $enableAutoReferer = true;
+    private ?string $contentType = NULL;
 
-    private function getCurlSession(string $url) : resource {
+    private function buildCurlSession(string $url) : resource {
       $ch = curl_init();
       $urlinfo = parse_url($url);
       $httpHeader = array();
@@ -22,17 +25,30 @@
       curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
       curl_setopt($ch, CURLOPT_USERAGENT, $this->userAgent);
       curl_setopt($ch, CURLOPT_TIMEOUT, $this->timeout);
-      curl_setopt($ch, CURLOPT_REFERER, $urlinfo["scheme"]."://".$urlinfo["host"]);
+      curl_setopt($ch, CURLOPT_REFERER, $this->referer === NULL ? ($this->enableAutoReferer ? $urlinfo["scheme"]."://".$urlinfo["host"] : "") : $this->referer);
 
       if($this->postData !== NULL) {
-        $postDataQuery = http_build_query($this->postData);
-
         curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $postDataQuery);
+
+        //Key:Value 값 형식일 때        
+        if(is_array($this->postData) || $this->postData instanceof Map) {
+          $postDataQuery = http_build_query($this->postData);
+          curl_setopt($ch, CURLOPT_POSTFIELDS, $postDataQuery);
+        } else { //Json 등의 형식일 때.
+          curl_setopt($ch, CURLOPT_BINARYTRANSFER, true);
+          curl_setopt($ch, CURLOPT_POSTFIELDS, $this->postData);
+          $httpHeader[] = "Content-Length : ".strlen($this->postData);
+        }
       }
 
+      //인증 정보
       if($this->authorization !== NULL) {
         $httpHeader[] = "authorization: ".$this->authorization;
+      }
+
+      // 컨텐츠 타입
+      if($this->contentType !== NULL) {
+        $httpHeader[] = "Content-Type: ".$this->contentType;
       }
 
       // 설정된 헤더가 있을 경우
@@ -44,13 +60,13 @@
     }
 
     public function get(string $url) : string {
-      $ch = $this->getCurlSession($url);
+      $ch = $this->buildCurlSession($url);
 
       $res = curl_exec($ch);
 
       $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
       if(!$this->isCodeOk($httpCode)) {
-        throw new HttpURLAccessException("Failed to URL open : {$url} / ".curl_error($ch));
+        throw new HttpURLAccessException("Failed to URL open : {$url} / ".htmlspecialchars($res));
       }
       curl_close($ch);
 
@@ -73,7 +89,7 @@
 
     public function download(string $url, ?string $destPath = NULL) : string {
       if($destPath === NULL) $destPath = FileUtils::getTempFilePath();
-      $ch = $this->getCurlSession($url);
+      $ch = $this->buildCurlSession($url);
 
       if(($res = curl_exec($ch)) === false) {
         curl_close($ch);
@@ -138,7 +154,7 @@
         }
 
         $result = $contentLength;
-      } 
+      }
 
       return $result;
     }
@@ -195,20 +211,36 @@
       else return false;
     }
 
-    public function getUserAgent() : string {
-      return $this->userAgent;
+    public function setContentType(string $type) : void {
+      $this->contentType = $type;
     }
 
-    public function setPostData(array<string,mixed> $postData) : void {
+    public function setAutoReferer(bool $enable) : void {
+      $this->enableAutoReferer = $enable;
+    }
+
+    public function setReferer(string $referer) : void {
+      $this->referer = $referer;
+    }
+
+    public function getReferer() : ?string {
+      return $this->referer;
+    }
+
+    public function setPostData(mixed $postData) : void {
       $this->postData = $postData;
     }
 
-    public function getPostData() : ?array<string,mixed> {
+    public function getPostData() : mixed {
       return $this->postData;
     }
 
     public function setAuthorization(string $authorization) : void {
       $this->authorization = $authorization;
+    }
+
+    public function getUserAgent() : string {
+      return $this->userAgent;
     }
 
     public function setUsetAgent(string $usetAgent) : void {
