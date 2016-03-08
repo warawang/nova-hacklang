@@ -17,7 +17,7 @@
 
       invariant($storeManager instanceof StoreManager, $this->storeManagerClass." must be Crawler class instance.");
 
-      $crawlerClassName = $this->namespace."\\".$this->sourceList->get($sourceUid)."Crawler";
+      $crawlerClassName = $this->namespace."\\".$this->sourceList->get($sourceUid);
       $crawlerReflector = new \ReflectionClass($crawlerClassName);
       $crawler = $crawlerReflector->newInstanceArgs([$storeManager]);
 
