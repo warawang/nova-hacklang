@@ -16,4 +16,13 @@
       return $parts[$len-2].".".$parts[$len-1];
     }
 
+    public static function stripBeginnginWord(string $title) : string {
+      $title = preg_replace('/\((.*?)\)/i', "", $title); //(블라)
+      $title = preg_replace('/\[(.*?)\]/i', "", $title); // [블라]
+      $title = preg_replace('/^(.*?)\)/i', "", $title); // 블라)
+      $title = preg_replace('/^(.*?)\]/i', "", $title); // 블라]
+
+      return $title;
+    }
+
   }
