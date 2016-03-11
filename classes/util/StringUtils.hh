@@ -17,10 +17,12 @@
     }
 
     public static function stripBeginnginWord(string $title) : string {
+      $title = trim($title);
       $title = preg_replace('/\((.*?)\)/i', "", $title); //(블라)
       $title = preg_replace('/\[(.*?)\]/i', "", $title); // [블라]
       $title = preg_replace('/^(.*?)\)/i', "", $title); // 블라)
       $title = preg_replace('/^(.*?)\]/i', "", $title); // 블라]
+      $title = trim($title);
 
       return $title;
     }
