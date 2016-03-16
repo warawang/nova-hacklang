@@ -6,10 +6,10 @@
   namespace nova\crawl;
 
   abstract class StoreManager {
-    public function __construct(private int $sourceUid) {}
+    public function __construct(private int $crawlerUid) {}
 
-    public function getSourceUid() : int {
-      return $this->sourceUid;
+    public function getCrawlerUid() : int {
+      return $this->crawlerUid;
     }
 
     abstract public function add(Map<string, mixed> $content) : int;
