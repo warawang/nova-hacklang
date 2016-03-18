@@ -74,7 +74,16 @@
 
         return $result;
       } else if($this->request instanceof ErrorViewRequest) {
-        header("HTTP/1.1 500 Internal Server Error");
+        switch($this->request->getErrorCode()) {
+          case 404:
+            header("HTTP/1.1 404 Not Found");
+          break;
+
+          default:
+            header("HTTP/1.1 500 Internal Server Error");
+          break;
+        }
+
         $viewPath = ViewUtils::getViewFolder("error")."/".$this->request->getViewName().".html";
 
         //View에서 사용할 값을 지역 변수로 지정
@@ -84,7 +93,7 @@
         // UNSAFE
 				eval("?>".file_get_contents($viewPath)."<?");
 				$result = ob_get_clean();
-        return "";
+        return $result;
       } else {
         return "";
       }
