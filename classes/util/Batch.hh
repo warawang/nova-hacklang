@@ -34,7 +34,7 @@
         //타임아웃 시간이 있고, 현재 타임아웃 걸림, 과거 프로세스 제거
         if($this->timeout > 0 && time()-$fileTS > $this->timeout)  {
 					//이전 프로세스 타임아웃
-					posix_kill($beforePID,1);
+					posix_kill((int)$beforePID,1);
 				} else {
 					//아직 타임아웃 아님
 					if(posix_getsid($beforePID)) {
