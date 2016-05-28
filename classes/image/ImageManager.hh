@@ -81,6 +81,7 @@
 
       //TopPiece를 생성한다 ( 세로로 긴 형태의 편집 이미지에 대응)
       $orgImage->createTopPiece();
+      exit;
       $topPiece = $orgImage->getTopPiece();
 
       foreach($this->getImageList() as $type => $typeInfo) {
