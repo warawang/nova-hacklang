@@ -17,6 +17,7 @@
 
 		const COLOR_BLANK_DEVIATION = 10.0; //특정 영역을 구성하는 필셀별 색생의 표준 편차가 여기에 정의된 숫자 이하이면 공백으로 본다.
 		const DIVIDED_DIFF = 75; //각 라인에 사용된 색상 그룹의 유사성이 이 이상이면 분절된 지점으로 판단한다.
+    const TOPPIECE_LIMIT = 1024; //DEFAULT_TOPPIECE 까지 분절점이 확인되지 않으면 찾지 못한 것으로 본다
 
 		// Properties
 		private ?resource $im = NULL;
@@ -895,6 +896,13 @@
 
 			list($width,$height) = $this->getSize();
 
+      /**
+       * 임시처리, 너무 큰 이미지는 스킵.
+       * @param  {[type]} $width*$height>5000000 [description]
+       * @return {[type]}                        [description]
+       */
+      if($width*$height>5000000) return $this;
+
 			$blankL = 0;
 			$blankT = 0;
 			$blankR = 0;
@@ -1129,6 +1137,7 @@
 		 * topPiece가 생성/저장 되었다면 true를 리턴한다
 		 */
 		public function createTopPiece() : bool {
+
 			if($this->failCreateTopPiece) return false; //이미 실패한 기록이 있으면
 			if($this->topPiece !== NULL) return true; //이미 생성되어 있다면 패스!
 			if($this->getSizeType() !== ImageSizeType::Vertical && $this->getSizeType() !== ImageSizeType::VerticalLong ) {
@@ -1195,6 +1204,9 @@
 				if($res >= self::DIVIDED_DIFF && $y > 5) {
 					return $y;
 				}
+        if($y >= self::TOPPIECE_LIMIT) {
+          return NULL;
+        }
 			}
 
 			return NULL;
