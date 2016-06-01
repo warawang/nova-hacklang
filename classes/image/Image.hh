@@ -15,7 +15,7 @@
 		const HORIZONTAL_WIDE_RATIO = 2.8; // 이와 같거나 크면 가로로 긴 이미지로 판단
 		const VERTICAL_LONG_RATIO = 0.55; // 이와 같거나 작으면 세로로 긴 이미지로 판단
 
-		const COLOR_BLANK_DEVIATION = 10.0; //특정 영역을 구성하는 필셀별 색생의 표준 편차가 여기에 정의된 숫자 이하이면 공백으로 본다.
+		const COLOR_BLANK_DEVIATION = 7.5; //특정 영역을 구성하는 필셀별 색생의 표준 편차가 여기에 정의된 숫자 이하이면 공백으로 본다.
 		const DIVIDED_DIFF = 75; //각 라인에 사용된 색상 그룹의 유사성이 이 이상이면 분절된 지점으로 판단한다.
     const TOPPIECE_LIMIT = 1024; //DEFAULT_TOPPIECE 까지 분절점이 확인되지 않으면 찾지 못한 것으로 본다
 
@@ -129,6 +129,7 @@
 		}
 
 		public function saveJPEG(string $path, int $quality=95) : bool {
+      //print_r($this->getSize());
 			if(!$this->isLoaded()) return false;
 			return imagejpeg($this->im,$path,$quality);
 		}
@@ -383,7 +384,6 @@
 				case ImageResizeType::FitAndCut:
 					$fitRatio = $this->getFitRatio($orgWidth,$orgHeight,$destWidth,$destHeight);
 					if($fitRatio>=1) return $this;
-
 					$outWidth = $orgWidth*$fitRatio;
 					$outHeight = $orgHeight*$fitRatio;
 

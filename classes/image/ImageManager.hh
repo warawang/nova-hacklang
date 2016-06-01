@@ -16,6 +16,7 @@
 
   abstract class ImageManager extends FileManager {
     abstract public function getMaxSize() : array<int>;
+    abstract public function getMinSize() : array<int>; //이미지가 이것보다 작으면 쓸모없는 것으로 본다
 
     public function getS3Bucket() : string {
       return Config::getInstance()->getS3Bucket("stg");
@@ -79,13 +80,24 @@
       //공백삭제
       if($trim) $orgImage = $orgImage->trim();
 
+      list($minWidth, $minHeight) = $this->getMinSize();
+      list($maxWidth, $maxHeight) = $this->getMaxSize();
+      list($orgWidth, $orgHeight) = $orgImage->getSize();
+
+      if($minWidth>=$orgWidth || $minHeight>=$orgHeight) throw new ImageException("This image is too small.");
+
       //TopPiece를 생성한다 ( 세로로 긴 형태의 편집 이미지에 대응)
-      $orgImage->createTopPiece();      
+      $orgImage->createTopPiece();
       $topPiece = $orgImage->getTopPiece();
 
       foreach($this->getImageList() as $type => $typeInfo) {
         if(!$typeInfo->indispensable) continue; //필수로 생성해야 하는 이미지만 생성, 이 외 옵셔널 이미지는 상속 클래스에서 별도 생성.
         $tmpImage = $orgImage->resize($typeInfo->width, $typeInfo->height, $typeInfo->resizeType);
+
+        // 크기 확인
+        list($tmpWidth, $tmpHeight) = $tmpImage->getSize();
+        if($maxWidth<$tmpWidth || $maxHeight<$tmpHeight) throw new ImageException("This image is too big.");
+
 
         $tmpPath = FileUtils::getTempFilePath();
         if(!$tmpImage->save($this->getImageFormat(), $tmpPath, $this->getImageQuality())) {
