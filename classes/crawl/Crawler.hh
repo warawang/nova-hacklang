@@ -7,6 +7,7 @@
 
 
   abstract class Crawler {
+
     private ?Http $http;
     public function __construct(private StoreManager $storeManager) {
     }
